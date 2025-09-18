@@ -1,4 +1,5 @@
 import { query } from "../../config/db.config.js";
+import { DataBaseError } from "../../errors/TypesError.js";
 
 
 
@@ -22,8 +23,7 @@ export const getTableDetails = async (tableName) => {
         const { rows } = await query(queryDictionary, value);
         return rows;
     } catch (error) {
-        console.error(`Error al crear el diccionario de la tabla "${tableName}". ERROR: ${error}`)
-    }
+        throw new DataBaseError(`Error al crear el diccionario de la tabla "${tableName}"`, error)    }
 }
 
 
@@ -41,7 +41,6 @@ export const tableExists = async(tableName) => {
         return rows[0].exists
 
     } catch (error) {
-        console.error(`Error al verificar si existe la tabla "${tableName}"`)
+     throw new DataBaseError(`Error al verificar si existe la tabla "${tableName}"`, error) 
     }
-
 }

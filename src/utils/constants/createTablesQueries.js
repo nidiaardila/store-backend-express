@@ -1,3 +1,4 @@
+
 export const createTableQueries = [
     {
         queryText: `
