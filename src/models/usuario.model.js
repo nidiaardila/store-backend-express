@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { query } from '../config/db.config.js';
 import { DataBaseError, ValidationError } from '../errors/TypesError.js';
 import { Validation } from '../utils/validate/Validate.js';
+import { createRecord } from '../utils/crud/crudUtils.js';
 
 
 export class Usuario {
@@ -38,18 +39,18 @@ export class Usuario {
 
 
         try {
-          apellido_maternoValido = Validation.isNonEmptyString(apellido_materno, 'apellido_paterno');
-          apellido_maternoValido = Validation.name(apellido_materno, 'apellido_paterno');
+            apellido_maternoValido = Validation.isNonEmptyString(apellido_materno, 'apellido_paterno');
+            apellido_maternoValido = Validation.name(apellido_materno, 'apellido_paterno');
         } catch (error) {
-          errors.push(error.message);
+            errors.push(error.message);
         }
 
 
         try {
-          emailValido = Validation.isNonEmptyString(email, 'email');
-          emailValido = Validation.email(email);
+            emailValido = Validation.isNonEmptyString(email, 'email');
+            emailValido = Validation.email(email);
         } catch (error) {
-          errors.push(error.message);
+            errors.push(error.message);
         }
 
 
@@ -60,7 +61,7 @@ export class Usuario {
             errors.push(error.message);
         }
 
-        if(errors.length > 0) throw new ValidationError('Error al validar Usuario', errors)
+        if (errors.length > 0) throw new ValidationError('Error al validar Usuario', errors)
 
         return {
             nombre: nombreValido,
@@ -74,19 +75,14 @@ export class Usuario {
 
     static async create(data) {
         try {
-            const { nombre, apellido_paterno, apellido_materno, email, telefono } = data;
             const id = uuidv4();
             const active = true;
 
-            const insertQuery = `
-                INSERT INTO usuarios (id, nombre, apellido_paterno, apellido_materno, email, telefono, active)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
-                RETURNING *;
-            `
-            const values = [id, nombre, apellido_paterno, apellido_materno, email, telefono, active];
+            const user = { id, ...data, active }
 
-            const { rows } = await query(insertQuery, values);
-            return rows[0]
+            const userRecorded = await createRecord('usuarios', user)
+            return userRecorded
+
         } catch (error) {
             throw new DataBaseError('Error al registrar el usuario en la base de datos', error)
         }

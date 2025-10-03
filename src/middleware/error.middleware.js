@@ -2,7 +2,7 @@ import { CustomError } from "../errors/CustomError.js"
 import { InternalServerError } from "../errors/TypesError.js"
 
 export const errorHandler = (err, req, res, next) => {
-    if(!(err instanceof CustomError)) {
+    if (!(err instanceof CustomError)) {
         err = new InternalServerError(
             err.message || 'Error Inesperado',
             'Ups! Tenemos un error imprevisto, por favor contacta con nuestro equipo de soporte'
