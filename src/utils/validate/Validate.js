@@ -1,5 +1,4 @@
-import { ValidationError } from "../../errors/TypesError.js"
-
+import { NotFoundError, ValidationError, InternalServerError, DataBaseError } from "../../errors/TypesError.js"
 
 export class Validation {
     static isNonEmptyString(value, fieldName) {
@@ -100,10 +99,29 @@ export class Validation {
     }
 
     static isDataEmptyToDataBase(columns, values) {
-    if (values.length <= 0 || columns.length <= 0) {
-      throw new InternalServerError(`Error: no podemos crear registros vacíos`);
+        if (values.length <= 0 || columns.length <= 0) {
+            throw new InternalServerError(`Error: no podemos crear registros vacíos`);
+        }
+
+        return { columns, values }
     }
-    
-    return { columns, values }
-  }
+
+
+    static isEmptyDataResponse(data) {
+        if (data.length === 0 || !data) throw new NotFoundError('No pudimos encontrar el dato solicitado')
+        return data
+    }
+
+
+    static isValidFilter(filters, validFields) {
+        const filterKeys = Object.keys(filters);
+
+        for (const key of filterKeys) {
+            if (!validFields.includes(key)) {
+                throw new DataBaseError(
+                    `El campo "${key}" no es válido para esta entidad`
+                );
+            }
+        }
+    }
 }
